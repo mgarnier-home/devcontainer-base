@@ -1,0 +1,115 @@
+FROM ubuntu:jammy 
+
+# Install baseline packages
+RUN apt-get update && \
+  apt-get install --no-install-recommends --yes \
+  apt-transport-https \
+  bash \
+  bash-completion \
+  build-essential \
+  ca-certificates \
+  cifs-utils \
+  curl \
+  dmidecode \
+  gnupg-agent \
+  gpg \
+  htop \
+  iputils-ping \
+  jq \
+  lm-sensors \
+  locales \
+  man \
+  nano \
+  openssh-server \
+  p7zip-full \
+  pciutils \
+  python3 \
+  python3-pip \
+  software-properties-common \
+  sudo \
+  unzip \
+  util-linux \
+  vim \
+  wget \
+  rsync \
+  && \
+  # Install latest Git using their official PPA
+  add-apt-repository ppa:git-core/ppa && \
+  apt-get install --yes git \
+  && rm -rf /var/lib/apt/lists/*
+
+# Make typing unicode characters in the terminal work.
+ENV LANG=en_US.UTF-8
+ARG USER=mgarnier
+
+
+# Create a non-root user
+RUN \
+  useradd --groups sudo --no-create-home --shell /bin/bash ${USER}; \
+  echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER}; \
+  chmod 0440 /etc/sudoers.d/${USER}
+# sudo usermod -aG docker ${USER}
+
+# Switch to the non-root user
+USER ${USER}
+WORKDIR /home/${USER}
+
+# Setup user home directory and SSH keys
+COPY home ./
+RUN \
+  sudo chmod 644 ./.p10k.zsh; \
+  sudo chown -R ${USER}:${USER} .ssh; \
+  sudo chmod 700 .ssh; \
+  sudo chmod 600 .ssh/*
+
+# Zsh Installation
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.2.0/zsh-in-docker.sh)" && \
+  sudo chsh -s /usr/bin/zsh $USER
+SHELL ["/usr/bin/zsh", "-c"]
+
+RUN echo "[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh" >> ~/.zshrc
+
+# Tasks Installation
+ARG INSTALL_TASKS=false
+RUN \
+  if [ "${INSTALL_TASKS}" = "true" ]; then \
+  sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b .local; \
+  echo "export PATH=\$PATH:~/.local" >> ~/.zshrc; \
+  fi
+
+# GO Installation
+ARG INSTALL_GO=false
+RUN \
+  if [ "${INSTALL_GO}" = "true" ]; then \
+  curl -o go.tar.gz https://dl.google.com/go/go1.23.0.linux-amd64.tar.gz; \
+  sudo tar -C /usr/local -xzf go.tar.gz; \
+  rm go.tar.gz; \
+  echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.zshrc; \
+  echo "Go Installed"; \
+  fi
+
+# NVM Installation
+ARG INSTALL_NVM=false
+RUN \
+  if [ "${INSTALL_NVM}" = "true" ]; then \
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash; \
+  echo "NVM Installed"; \
+  source ~/.zshrc; \
+  nvm install 20; \
+  fi
+
+
+# Ansible Installation
+ARG INSTALL_ANSIBLE=false
+RUN \
+  if [ "${INSTALL_ANSIBLE}" = "true" ]; then \
+  sudo add-apt-repository --yes --update ppa:ansible/ansible; \
+  sudo DEBIAN_FRONTEND=noninteractive TZ=Europe/Paris apt-get install -y ansible; \
+  echo "Ansible Installed"; \
+  fi
+
+
+
+VOLUME [ "/mnt/dev" ]
+
+ENTRYPOINT [ "sleep", "infinity" ]
