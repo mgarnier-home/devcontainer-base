@@ -55,7 +55,6 @@ RUN \
   mkdir /run/sshd; \
   systemctl enable ssh
 
-COPY --chmod=755 ./entrypoint.sh /entrypoint.sh
 
 # Make typing unicode characters in the terminal work.
 ENV LANG=en_US.UTF-8
@@ -130,4 +129,9 @@ RUN \
 
 VOLUME [ "/mnt/dev" ]
 
-ENTRYPOINT [ "sudo", "bash", "/entrypoint.sh" ]
+RUN sudo mkdir -p /mnt/dev; \
+  sudo chown -R ${USER}:${USER} /mnt/dev
+
+COPY --chmod=755 ./setup /setup
+
+ENTRYPOINT [ "/setup/entrypoint.sh" ]

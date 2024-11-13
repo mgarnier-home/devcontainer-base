@@ -1,0 +1,44 @@
+name: home-devcontainer
+
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - INSTALL_TASKS=true
+        - INSTALL_GO=true
+        - INSTALL_NVM=true
+        - INSTALL_ANSIBLE=true
+        - SSHD_PORT=2222
+    env_file:
+      - .env
+    privileged: true
+    ports:
+      - 2222:2222
+    volumes:
+      - mnt-dev:/mnt/dev
+      - mnt-docker-data-athena:/mnt/docker-data/athena
+      - mnt-docker-data-zephyr:/mnt/docker-data/zephyr
+      - mnt-docker-data-apollon:/mnt/docker-data/apollon
+
+volumes:
+  mnt-dev:
+  mnt-docker-data-athena:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: //100.64.98.100/share/docker-data
+      o: rw,vers=3.02,mfsymlinks,cache=none,username=mgarnier,password=password,iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777
+  mnt-docker-data-zephyr:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: //100.64.98.97/share/docker-data
+      o: rw,vers=3.02,mfsymlinks,cache=none,username=mgarnier,password=password,iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777
+  mnt-docker-data-apollon:
+    driver: local
+    driver_opts:
+      type: cifs
+      device: //100.64.98.99/share/docker-data
+      o: rw,vers=3.02,mfsymlinks,cache=none,username=mgarnier,password=password,iocharset=utf8,uid=1000,sec=ntlmv2,file_mode=0777,dir_mode=0777

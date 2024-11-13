@@ -4,15 +4,19 @@
   "name": "Debian",
   // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
   // "image": "mcr.microsoft.com/devcontainers/base:bookworm",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "args": {
-      "INSTALL_TASKS": "true",
-      "INSTALL_GO": "true",
-      "INSTALL_NVM": "true",
-      "INSTALL_ANSIBLE": "true"
-    }
-  },
+  // "build": {
+  //   "dockerfile": "Dockerfile",
+  //   "args": {
+  //     "INSTALL_TASKS": "true",
+  //     "INSTALL_GO": "true",
+  //     "INSTALL_NVM": "true",
+  //     "INSTALL_ANSIBLE": "true"
+  //   }
+  // },
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "devcontainer",
+  "workspaceFolder": "/mnt/dev",
+  
   // "features": {
     // "docker-in-docker": {
     //   "version": "latest",
@@ -28,8 +32,9 @@
     // "ghcr.io/devcontainers/features/go:1": {},
     // "ghcr.io/devcontainers/features/docker-in-docker:2": {}
   // },
-  "runArgs": ["--privileged"],
   "overrideCommand": false,
+  "mounts": [],
+  // "postStartCommand": "zsh /setup/setup.sh",
 
   // "appPort": [
   //   2222
