@@ -38,6 +38,25 @@ RUN apt-get update && \
   apt-get install --yes git \
   && rm -rf /var/lib/apt/lists/*
 
+
+RUN \
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -; \
+  apt-key fingerprint 0EBFCD88; \
+  add-apt-repository \
+  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) \
+  stable"; \
+  apt-get update && apt-get install --no-install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+ARG SSHD_PORT=2222
+RUN \
+  sed -i -e "s/^#\(Port\) .*/\1 ${SSHD_PORT}/" /etc/ssh/sshd_config; \
+  mkdir /run/sshd; \
+  systemctl enable ssh
+
+COPY --chmod=755 ./entrypoint.sh /entrypoint.sh
+
 # Make typing unicode characters in the terminal work.
 ENV LANG=en_US.UTF-8
 ARG USER=mgarnier
@@ -47,8 +66,9 @@ ARG USER=mgarnier
 RUN \
   useradd --groups sudo --no-create-home --shell /bin/bash ${USER}; \
   echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER}; \
-  chmod 0440 /etc/sudoers.d/${USER}
-# sudo usermod -aG docker ${USER}
+  chmod 0440 /etc/sudoers.d/${USER}; \
+  sudo usermod -aG docker ${USER}
+
 
 # Switch to the non-root user
 USER ${USER}
@@ -108,8 +128,6 @@ RUN \
   echo "Ansible Installed"; \
   fi
 
-
-
 VOLUME [ "/mnt/dev" ]
 
-ENTRYPOINT [ "sleep", "infinity" ]
+ENTRYPOINT [ "sudo", "bash", "/entrypoint.sh" ]
