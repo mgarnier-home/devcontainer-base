@@ -31,9 +31,9 @@
   "runArgs": ["--privileged"],
   "overrideCommand": false,
 
-  "appPort": [
-    2222
-  ],
+  // "appPort": [
+  //   2222
+  // ],
 
   // Configure tool-specific properties.
   "customizations": {
