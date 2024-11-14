@@ -32,9 +32,8 @@ setupHomeMonorepo() {
   export ENV_DIR="$docker_data_dir/zephyr/orchestrator"
 
   task home-cli:build
-  sudo cp $home_monorepo_dir/apps/home-cli/dist/home-cli /usr/local/bin/home-cli
-  sudo chown $USER:$USER /usr/local/bin/home-cli
-  sudo chmod +x /usr/local/bin/home-cli
+
+  ln -s $home_monorepo_dir/apps/home-cli/dist/home-cli ~/.local/home-cli
 
   echo "export ATHENA_HOST=ssh://mgarnier@100.64.98.100" >>~/.zshrc
   echo "export ZEPHYR_HOST=ssh://mgarnier@100.64.98.97" >>~/.zshrc
