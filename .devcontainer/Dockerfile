@@ -132,6 +132,6 @@ VOLUME [ "/mnt/dev" ]
 RUN sudo mkdir -p /mnt/dev; \
   sudo chown -R ${USER}:${USER} /mnt/dev
 
-COPY --chmod=755 ./setup /setup
+COPY --chmod=755 --chown=mgarnier:mgarnier ./setup /setup
 
 ENTRYPOINT [ "/setup/entrypoint.sh" ]

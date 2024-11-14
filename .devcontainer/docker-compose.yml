@@ -6,16 +6,18 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
+        - SSHD_PORT=2222
         - INSTALL_TASKS=true
         - INSTALL_GO=true
         - INSTALL_NVM=true
         - INSTALL_ANSIBLE=true
-        - SSHD_PORT=2222
+        - INSTALL_VSCODE=true
     env_file:
       - .env
     privileged: true
     ports:
       - 2222:2222
+      - 2223:8080
     volumes:
       - mnt-dev:/mnt/dev
       - mnt-docker-data-athena:/mnt/docker-data/athena
