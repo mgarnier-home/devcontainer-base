@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 get_value_with_default() {
   local json_input=$1
   local key=$2
@@ -76,4 +78,6 @@ echo "$EXTENSIONS" | jq -r '.[]' | while read extension; do
   fi
 done
 
-${VSCODE_WEB} serve-web $EXTENSION_ARG --port $PORT --host 0.0.0.0 --accept-server-license-terms --without-connection-token --telemetry-level off >$LOG_PATH 2>&1 &
+if [ -f "/setup/entrypoint.sh" ]; then
+  sed -i "1a ${VSCODE_WEB} serve-web $EXTENSION_ARG --port $PORT --host 0.0.0.0 --accept-server-license-terms --without-connection-token --telemetry-level off > $LOG_PATH 2>&1 &" /setup/entrypoint.sh
+fi

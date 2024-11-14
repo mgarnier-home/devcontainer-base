@@ -1,11 +1,9 @@
 #!/usr/bin/zsh
 . ~/.zshrc
 
-cat <<EOF >~/.ssh/id_rsa
------BEGIN OPENSSH PRIVATE KEY-----
-$SSH_PRIVATE_KEY
------END OPENSSH PRIVATE KEY-----
-EOF
+set -euo pipefail
+
+cp /run/secrets/SSH_PRIVATE_KEY ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
 
 git config --global core.autocrlf false
@@ -44,7 +42,16 @@ setupHomeMonorepo() {
   echo "export COMPOSE_DIR=$docker_data_dir/zephyr/orchestrator" >>~/.zshrc
   echo "export ENV_DIR=$docker_data_dir/zephyr/orchestrator" >>~/.zshrc
   echo "source <(home-cli completion zsh)" >>~/.zshrc
+}
 
+setupHomeContainer() {
+  home_container_dir=/mnt/dev/home-container
+
+  if [ ! -d $home_container_dir ]; then
+    git clone git@github.com:mgarnier-home/home-container.git $home_container_dir
+  fi
+
+  git config --global --add safe.directory $home_container_dir
 }
 
 # setupHomeConfig() {
@@ -106,6 +113,7 @@ setupGhActions() {
 # }
 
 setupHomeMonorepo
+setupHomeContainer
 setupGhActions
 
 bash /setup/get-workspace-file.sh "$(tr '\n' ' ' </setup/workspace.json)"

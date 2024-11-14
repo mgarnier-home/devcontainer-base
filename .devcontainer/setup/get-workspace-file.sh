@@ -1,3 +1,5 @@
+set -euo pipefail
+
 baseWorkspace=${1:-'{}'}
 
 echo "Base workspace file content:"

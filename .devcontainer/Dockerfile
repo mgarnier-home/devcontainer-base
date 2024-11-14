@@ -127,11 +127,23 @@ RUN \
   echo "Ansible Installed"; \
   fi
 
+# Copy entrypoint before setting up vscode, because vscode install script will modify the entrypoint
+COPY --chmod=755 --chown=${USER}:${USER} ./entrypoint.sh /entrypoint.sh
+
+ARG INSTALL_VSCODE=false
+COPY --chmod=755 --chown=${USER}:${USER} ./setup-vscode /setup-vscode
+RUN \
+  if [ "${INSTALL_VSCODE}" = "true" ]; then \
+  bash /setup-vscode/setup.sh "$(tr '\n' ' ' </setup-vscode/vscode-params.json)"; \
+  fi
+
+
 VOLUME [ "/mnt/dev" ]
 
 RUN sudo mkdir -p /mnt/dev; \
   sudo chown -R ${USER}:${USER} /mnt/dev
 
-COPY --chmod=755 --chown=mgarnier:mgarnier ./setup /setup
+COPY --chmod=755 --chown=${USER}:${USER} ./setup /setup
 
-ENTRYPOINT [ "/setup/entrypoint.sh" ]
+
+ENTRYPOINT [ "/entrypoint.sh" ]
