@@ -6,9 +6,6 @@
   "service": "devcontainer",
   "workspaceFolder": "/home/mgarnier",
   "overrideCommand": false,
-  "containerEnv": {
-    "SSH_PRIVATE_KEY": "${env:SSH_PRIVATE_KEY}"
-  },
   "postStartCommand": "while [ ! -f ~/.setup_complete ]; do sleep 1; done; echo 'Setup complete !';",
   "waitFor": "postStartCommand"
 }
