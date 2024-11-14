@@ -5,5 +5,8 @@
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
   "workspaceFolder": "/home/mgarnier",
-  "overrideCommand": false
+  "overrideCommand": false,
+  "containerEnv": {
+    "SSH_PRIVATE_KEY": "${env:SSH_PRIVATE_KEY}"
+  }
 }

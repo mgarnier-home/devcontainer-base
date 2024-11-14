@@ -12,8 +12,8 @@ services:
         - INSTALL_NVM=true
         - INSTALL_ANSIBLE=true
         - INSTALL_VSCODE=true
-    env_file:
-      - .env
+    environment:
+      - SSH_PRIVATE_KEY=${SSH_PRIVATE_KEY}
     privileged: true
     ports:
       - 2222:2222
