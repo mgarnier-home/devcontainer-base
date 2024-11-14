@@ -2,64 +2,8 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
   "name": "Debian",
-  // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-  // "image": "mcr.microsoft.com/devcontainers/base:bookworm",
-  // "build": {
-  //   "dockerfile": "Dockerfile",
-  //   "args": {
-  //     "INSTALL_TASKS": "true",
-  //     "INSTALL_GO": "true",
-  //     "INSTALL_NVM": "true",
-  //     "INSTALL_ANSIBLE": "true"
-  //   }
-  // },
   "dockerComposeFile": "docker-compose.yml",
   "service": "devcontainer",
-  "workspaceFolder": "/mnt/dev",
-  
-  // "features": {
-    // "docker-in-docker": {
-    //   "version": "latest",
-    //   "moby": true,
-    //   "dockerDashComposeVersion": "v2"
-    // }, 
-    // "sshd": {
-    //   "version": "latest",
-    //   "port": 2222
-    // }
-    // "ghcr.io/devcontainers-contrib/features/ansible:2": {},
-    // "ghcr.io/hspaans/devcontainer-features/ansible-lint:1": {},
-    // "ghcr.io/devcontainers/features/go:1": {},
-    // "ghcr.io/devcontainers/features/docker-in-docker:2": {}
-  // },
-  "overrideCommand": false,
-  "mounts": [],
-  // "postStartCommand": "zsh /setup/setup.sh",
-
-  // "appPort": [
-  //   2222
-  // ],
-
-  // Configure tool-specific properties.
-  "customizations": {
-    "vscode": {
-      // "extensions": [
-      //   "esbenp.prettier-vscode",
-      //   "naumovs.color-highlight",
-      //   "supermaven.supermaven",
-      //   "eamodio.gitlens",
-      //   "oderwat.indent-rainbow",
-      //   "redhat.vscode-xml",
-      //   "redhat.vscode-yaml",
-      //   "medo64.render-crlf",
-      //   "redhat.ansible",
-      //   "golang.go"
-      // ]
-    }
-  }
-
-  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-  // "remoteUser": "root"
-  // "onCreateCommand": "${containerWorkspaceFolder}/.devcontainer/post-create.sh"
-  // "forwardPorts": ["1337:1337"]
+  "workspaceFolder": "/home/mgarnier",
+  "overrideCommand": false
 }
