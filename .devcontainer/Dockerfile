@@ -79,9 +79,6 @@ RUN \
 USER ${USER}
 WORKDIR /home/${USER}
 
-# Copy entrypoint before setting up vscode, because vscode install script will modify the entrypoint
-COPY --chmod=755 --chown=${USER}:${USER} ./entrypoint.sh /entrypoint.sh
-
 # Setup VSCode
 COPY --chmod=755 --chown=${USER}:${USER} ./vscode /vscode
 ENV VSCODE_INSTALL_PATH=/home/${USER}/.vscode-web
@@ -119,6 +116,8 @@ SHELL ["/usr/bin/fish", "-c"]
 
 COPY --chmod=755 --chown=${USER}:${USER} ./setup /setup
 RUN sudo chmod -R +x /setup
+
+COPY --chmod=755 --chown=${USER}:${USER} ./entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
