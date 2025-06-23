@@ -24,4 +24,4 @@ sudo service ssh start
 
 touch ~/.setup_complete
 
-sleep infinity
+"$VSCODE_INSTALL_PATH/bin/code-server serve-web $VSCODE_EXTENSIONS_PATH --port $VSCODE_WEB_PORT   --host 0.0.0.0 --accept-server-license-terms --without-connection-token --telemetry-level off"

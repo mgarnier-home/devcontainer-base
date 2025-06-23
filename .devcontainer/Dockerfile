@@ -83,15 +83,16 @@ WORKDIR /home/${USER}
 COPY --chmod=755 --chown=${USER}:${USER} ./entrypoint.sh /entrypoint.sh
 
 # Setup VSCode
-COPY --chmod=755 --chown=${USER}:${USER} ./setup-vscode /setup-vscode
-RUN \
-  bash /setup-vscode/setup.sh "$(tr '\n' ' ' </setup-vscode/vscode-params.json)";
+COPY --chmod=755 --chown=${USER}:${USER} ./vscode /vscode
+ENV VSCODE_INSTALL_PATH=/home/${USER}/.vscode-web
+ENV VSCODE_EXTENSIONS_PATH=/home/${USER}/.vscode-server/extensions
+ENV VSCODE_WEB_PORT=8080
+RUN bash /vscode/setup.sh;
 
 VOLUME [ "/mnt/dev" ]
 
 RUN sudo mkdir -p /mnt/dev; \
   sudo chown -R ${USER}:${USER} /mnt
-
 
 # Install fish and fisher
 COPY --chmod=755 --chown=${USER}:${USER} ./fish /home/${USER}/.config/fish
@@ -117,6 +118,7 @@ RUN \
 SHELL ["/usr/bin/fish", "-c"]
 
 COPY --chmod=755 --chown=${USER}:${USER} ./setup /setup
+RUN sudo chmod -R +x /setup
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 
