@@ -1,7 +1,24 @@
-#!/bin/bash
+#!/usr/bin/env bash
 sudo sh -c "dockerd >/var/log/dockerd.log 2>&1 &"
 
-zsh /setup/setup.sh
+# Create or overwrite ~/.ssh/environment file
+env | grep '^DEVCONTAINER_' >~/.ssh/environment
+
+# Execute all files preent in the /setup directory, and respect the shebang
+for file in /setup/*; do
+  if [ -f "$file" ]; then
+    echo "Executing setup file: $file"
+    if [[ -x "$file" ]]; then
+      # If the file is executable, run it directly
+      "$file"
+    else
+      # If the file is not executable, source it
+      echo "Skipping non-executable file: $file"
+    fi
+  else
+    echo "Skipping non-file: $file"
+  fi
+done
 
 sudo service ssh start
 
