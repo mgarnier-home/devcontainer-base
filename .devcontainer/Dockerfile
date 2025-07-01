@@ -27,11 +27,13 @@ RUN apt-get update && \
   python3-pip \
   software-properties-common \
   sudo \
+  zip \
   unzip \
   util-linux \
   vim \
   wget \
   rsync \
+  tree \
   && \
   # Install latest Git using their official PPA
   add-apt-repository ppa:git-core/ppa && \
