@@ -102,18 +102,22 @@ RUN \
 RUN sudo chsh -s /usr/bin/fish ${USER}
 RUN fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install IlanCosman/tide@v6"
 
-# NVM Installation
-RUN fish -c "fisher install jorgebucaran/nvm.fish"
-
 # Tasks Installation
-RUN \
-  sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b .local; \
-  fish -c "set -U fish_user_paths /home/${USER}/.local $fish_user_paths"
+RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b .local
 
+# Ansible installation
 RUN \
   sudo add-apt-repository --yes --update ppa:ansible/ansible; \
   sudo DEBIAN_FRONTEND=noninteractive TZ=Europe/Paris apt-get install -y ansible
 
+# FNM installation
+RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir /home/${USER}/.local --skip-shell
+
+# Add .local to the PATH
+RUN fish -c "set -U fish_user_paths /home/${USER}/.local $fish_user_paths"
+
+
+# Define fish as the default shell
 SHELL ["/usr/bin/fish", "-c"]
 
 COPY --chmod=755 --chown=${USER}:${USER} ./setup /setup

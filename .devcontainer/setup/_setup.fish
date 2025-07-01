@@ -11,8 +11,8 @@ git config --global user.name "$GIT_NAME"
 set -q NODE_VERSION
 or set NODE_VERSION 20
 
-nvm install $NODE_VERSION
-nvm use $NODE_VERSION
+fnm install $NODE_VERSION
+fnm use $NODE_VERSION
 
 # install go
 set -q GO_VERSION
