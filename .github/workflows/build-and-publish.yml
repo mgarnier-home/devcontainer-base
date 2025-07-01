@@ -1,9 +1,9 @@
 name: 'Build/Publish'
-run-name: 'Build/Publish : mgarnier11/devcontainer-basae:${{ github.ref_name }}'
+run-name: 'Build/Publish : mgarnier11/devcontainer-base:${{ github.ref_name }}'
 on:
   push:
     branches:
-      - master
+      - main
     paths-ignore:
       - '.github/**'
   workflow_dispatch:
@@ -11,7 +11,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    needs: lint
     steps:
       - name: Configuration de Docker Buildx
         uses: docker/setup-buildx-action@v3
