@@ -1,5 +1,5 @@
 name: 'Build/Publish'
-run-name: 'Build/Publish : mgarnier11/devcontainer-base:${{ github.ref_name }}'
+run-name: 'Build/Publish : mgarnier11/devcontainer-base:${{ github.sha }}'
 on:
   push:
     branches:
