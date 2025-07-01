@@ -12,10 +12,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Configuration de Docker Buildx
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Construction de l'image Docker
+      - name: Build Docker image
         env:
           TOKEN: ${{ secrets.ARTIFACTORY_AUTH_TOKEN }}
         run: |
@@ -25,7 +28,7 @@ jobs:
           --tag mgarnier11/devcontainer-base:latest \
           .devcontainer
 
-      - name: Publication de l'image Docker
+      - name: Push Docker image
         run: |
           docker login --username '${{ secrets.DOCKERHUB_USERNAME }}' --password '${{ secrets.DOCKERHUB_TOKEN }}'
           docker push 'mgarnier11/devcontainer-base:${{ github.sha }}'
