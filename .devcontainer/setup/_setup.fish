@@ -9,14 +9,14 @@ git config --global user.name "$GIT_NAME"
 
 # install node
 set -q NODE_VERSION
-or set NODE_VERSION 20
+or set NODE_VERSION 22
 
 fnm install $NODE_VERSION
 fnm use $NODE_VERSION
 
 # install go
 set -q GO_VERSION
-or set GO_VERSION 1.24.4
+or set GO_VERSION 1.24.5
 curl -o go.tar.gz https://dl.google.com/go/go$GO_VERSION.linux-amd64.tar.gz
 sudo tar -C /usr/local -xzf go.tar.gz
 rm go.tar.gz
