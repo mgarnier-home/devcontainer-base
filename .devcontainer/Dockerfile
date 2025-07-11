@@ -98,7 +98,8 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
   sudo chsh -s /usr/bin/zsh $USER
 SHELL ["/usr/bin/zsh", "-c"]
 
-RUN echo "[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh" >> ~/.zshrc
+COPY --chmod=644 --chown=${USER}:${USER} ./zsh/.p10k.zsh /home/${USER}/.p10k.zsh
+RUN echo "[[ ! -f /home/${USER}/.p10k.zsh ]] || source /home/${USER}/.p10k.zsh" >> /home/${USER}/.zshrc
 
 # Tasks Installation
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b .local
@@ -109,7 +110,7 @@ RUN \
   sudo DEBIAN_FRONTEND=noninteractive TZ=Europe/Paris apt-get install -y ansible
 
 # GO Installation
-ARG GO_VERSION=1.23.3
+ARG GO_VERSION=1.24.5
 RUN \
   curl -o go.tar.gz https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz; \
   sudo tar -C /usr/local -xzf go.tar.gz; \
