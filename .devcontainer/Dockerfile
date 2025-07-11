@@ -93,14 +93,12 @@ VOLUME [ "/mnt/dev" ]
 RUN sudo mkdir -p /mnt/dev; \
   sudo chown -R ${USER}:${USER} /mnt
 
-# Install fish and fisher
-COPY --chmod=755 --chown=${USER}:${USER} ./fish /home/${USER}/.config/fish
-RUN \
-  sudo add-apt-repository ppa:fish-shell/release-4 && \
-  sudo apt-get update && \
-  sudo apt-get install --yes fish
-RUN sudo chsh -s /usr/bin/fish ${USER}
-RUN fish -c "curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher && fisher install IlanCosman/tide@v6"
+# Zsh Installation
+RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/v1.2.0/zsh-in-docker.sh)" && \
+  sudo chsh -s /usr/bin/zsh $USER
+SHELL ["/usr/bin/zsh", "-c"]
+
+RUN echo "[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh" >> ~/.zshrc
 
 # Tasks Installation
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b .local
@@ -110,11 +108,17 @@ RUN \
   sudo add-apt-repository --yes --update ppa:ansible/ansible; \
   sudo DEBIAN_FRONTEND=noninteractive TZ=Europe/Paris apt-get install -y ansible
 
-# FNM installation
-RUN curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir /home/${USER}/.local --skip-shell
+# GO Installation
+ARG GO_VERSION=1.24.5
+RUN \
+  curl -o go.tar.gz https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz; \
+  sudo tar -C /usr/local -xzf go.tar.gz; \
+  rm go.tar.gz; \
+  echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.zshrc; \
+  echo "Go Installed"
 
-# Add .local to the PATH
-RUN fish -c "set -U fish_user_paths /home/${USER}/.local $fish_user_paths"
+# NVM Installation
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash;
 
 # Install gh cli
 RUN (type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) \
@@ -125,10 +129,6 @@ RUN (type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y
   && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
   && sudo apt update \
   && sudo apt install gh -y
-
-
-# Define fish as the default shell
-SHELL ["/usr/bin/fish", "-c"]
 
 COPY --chmod=755 --chown=${USER}:${USER} ./setup /setup
 RUN sudo chmod -R +x /setup

@@ -9,15 +9,15 @@ services:
         - SSHD_PORT=2222
     privileged: true
     ports:
-      - 2222:2222
-      - 2223:8080
-    secrets: 
+      - 2223:2222
+      - 2224:8080
+    secrets:
       - SSH_PRIVATE_KEY
     volumes:
       - mnt-dev:/mnt/dev
 volumes:
   mnt-dev:
-  
+
 secrets:
   SSH_PRIVATE_KEY:
     file: ~/.ssh/id_rsa
