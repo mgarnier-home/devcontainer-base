@@ -109,7 +109,7 @@ RUN \
   sudo DEBIAN_FRONTEND=noninteractive TZ=Europe/Paris apt-get install -y ansible
 
 # GO Installation
-ARG GO_VERSION=1.24.5
+ARG GO_VERSION=1.23.3
 RUN \
   curl -o go.tar.gz https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz; \
   sudo tar -C /usr/local -xzf go.tar.gz; \
