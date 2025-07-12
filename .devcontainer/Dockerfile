@@ -102,7 +102,8 @@ COPY --chmod=644 --chown=${USER}:${USER} ./zsh/.p10k.zsh /home/${USER}/.p10k.zsh
 RUN echo "[[ ! -f /home/${USER}/.p10k.zsh ]] || source /home/${USER}/.p10k.zsh" >> /home/${USER}/.zshrc
 
 # Tasks Installation
-RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b .local
+RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b .local && \
+  echo "export PATH=\$PATH:\$HOME/.local" >> ~/.zshrc
 
 # Ansible installation
 RUN \
