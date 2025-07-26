@@ -11,13 +11,8 @@ services:
     ports:
       - 2223:2222
       - 2224:8080
-    secrets:
-      - SSH_PRIVATE_KEY
     volumes:
       - mnt-dev:/mnt/dev
+      - ~/.ssh/id_rsa:~/.ssh/id_rsa:ro
 volumes:
   mnt-dev:
-
-secrets:
-  SSH_PRIVATE_KEY:
-    file: ~/.ssh/id_rsa

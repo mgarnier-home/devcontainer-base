@@ -2,7 +2,7 @@
 sudo sh -c "dockerd >/var/log/dockerd.log 2>&1 &"
 
 # Create or overwrite ~/.ssh/environment file
-# env | grep '^DEVCONTAINER_' >~/.ssh/environment
+env | grep '^DEVCONTAINER_' >~/.ssh/environment
 
 # Execute all files preent in the /setup directory, and respect the shebang
 for file in /setup/*; do

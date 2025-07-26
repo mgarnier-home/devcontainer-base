@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 . ~/.zshrc
 
-cp /run/secrets/SSH_PRIVATE_KEY ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
 
 git config --global core.autocrlf false
