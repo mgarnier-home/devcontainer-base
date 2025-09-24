@@ -40,14 +40,14 @@ RUN apt-get update && \
   apt-get install --yes git \
   && rm -rf /var/lib/apt/lists/*
 
-RUN \
-  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -; \
-  apt-key fingerprint 0EBFCD88; \
-  add-apt-repository \
-  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) \
-  stable"; \
-  apt-get update && apt-get install --no-install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+# RUN \
+#   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -; \
+#   apt-key fingerprint 0EBFCD88; \
+#   add-apt-repository \
+#   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+#   $(lsb_release -cs) \
+#   stable"; \
+#   apt-get update && apt-get install --no-install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 
 ARG SSHD_PORT=2222
@@ -66,8 +66,9 @@ ARG USER=mgarnier
 RUN \
   useradd --groups sudo --no-create-home --shell /bin/bash ${USER}; \
   echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER}; \
-  chmod 0440 /etc/sudoers.d/${USER}; \
-  sudo usermod -aG docker ${USER}
+  chmod 0440 /etc/sudoers.d/${USER}; 
+# \
+# sudo usermod -aG docker ${USER}
 
 
 # Setup ssh authorized keys
@@ -80,6 +81,12 @@ RUN \
 # Switch to the non-root user
 USER ${USER}
 WORKDIR /home/${USER}
+
+# RUN \
+#   git config --global core.autocrlf false && \
+#   git config --global user.email "$" && \
+#   git config --global user.name "${USER}"
+
 
 # Setup VSCode
 COPY --chmod=755 --chown=${USER}:${USER} ./vscode /vscode
@@ -99,7 +106,23 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 SHELL ["/usr/bin/zsh", "-c"]
 
 COPY --chmod=644 --chown=${USER}:${USER} ./zsh/.p10k.zsh /home/${USER}/.p10k.zsh
-RUN echo "[[ ! -f /home/${USER}/.p10k.zsh ]] || source /home/${USER}/.p10k.zsh" >> /home/${USER}/.zshrc
+RUN \
+  echo "[[ ! -f /home/${USER}/.p10k.zsh ]] || source /home/${USER}/.p10k.zsh" >> /home/${USER}/.zshrc && \
+  echo "export PATH=\$PATH:\$HOME/.local" >> ~/.zshrc
+
+# ASDF Installation
+ARG ASDF_VERSION=0.18.0
+RUN mkdir -p $HOME/.local && \
+  curl -o asdf.tar.gz -L https://github.com/asdf-vm/asdf/releases/download/v${ASDF_VERSION}/asdf-v${ASDF_VERSION}-linux-amd64.tar.gz && \ 
+  tar -xzf asdf.tar.gz -C $HOME/.local && \
+  rm asdf.tar.gz && \
+  echo "export PATH=\${ASDF_DATA_DIR:-\$HOME/.asdf}/shims:\$PATH" >> ~/.zshrc && \
+  echo "plugins=(asdf)" >> ~/.zshrc
+
+RUN zsh -c "source ~/.zshrc &&  \
+  asdf --version && \
+  asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git && \
+  asdf plugin add golang https://github.com/asdf-community/asdf-golang.git"
 
 # Tasks Installation
 RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b .local && \
@@ -110,17 +133,17 @@ RUN \
   sudo add-apt-repository --yes --update ppa:ansible/ansible; \
   sudo DEBIAN_FRONTEND=noninteractive TZ=Europe/Paris apt-get install -y ansible
 
-# GO Installation
-ARG GO_VERSION=1.24.5
-RUN \
-  curl -o go.tar.gz https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz; \
-  sudo tar -C /usr/local -xzf go.tar.gz; \
-  rm go.tar.gz; \
-  echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.zshrc; \
-  echo "Go Installed"
+# # GO Installation
+# ARG GO_VERSION=1.24.5
+# RUN \
+#   curl -o go.tar.gz https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz; \
+#   sudo tar -C /usr/local -xzf go.tar.gz; \
+#   rm go.tar.gz; \
+#   echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.zshrc; \
+#   echo "Go Installed"
 
-# NVM Installation
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash;
+# # NVM Installation
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash;
 
 # Install gh cli
 RUN (type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) \
