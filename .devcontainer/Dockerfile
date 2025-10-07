@@ -40,14 +40,14 @@ RUN apt-get update && \
   apt-get install --yes git \
   && rm -rf /var/lib/apt/lists/*
 
-# RUN \
-#   curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -; \
-#   apt-key fingerprint 0EBFCD88; \
-#   add-apt-repository \
-#   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-#   $(lsb_release -cs) \
-#   stable"; \
-#   apt-get update && apt-get install --no-install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+RUN \
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -; \
+  apt-key fingerprint 0EBFCD88; \
+  add-apt-repository \
+  "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) \
+  stable"; \
+  apt-get update && apt-get install --no-install-recommends -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 
 ARG SSHD_PORT=2222
@@ -82,12 +82,6 @@ RUN \
 USER ${USER}
 WORKDIR /home/${USER}
 
-# RUN \
-#   git config --global core.autocrlf false && \
-#   git config --global user.email "$" && \
-#   git config --global user.name "${USER}"
-
-
 # Setup VSCode
 COPY --chmod=755 --chown=${USER}:${USER} ./vscode /vscode
 ENV VSCODE_INSTALL_PATH=/home/${USER}/.vscode-web
@@ -119,41 +113,28 @@ RUN mkdir -p $HOME/.local && \
   echo "export PATH=\${ASDF_DATA_DIR:-\$HOME/.asdf}/shims:\$PATH" >> ~/.zshrc && \
   echo "plugins=(asdf)" >> ~/.zshrc
 
-RUN zsh -c "source ~/.zshrc &&  \
-  asdf --version && \
-  asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git && \
-  asdf plugin add golang https://github.com/asdf-community/asdf-golang.git"
-
-# Tasks Installation
-RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b .local && \
-  echo "export PATH=\$PATH:\$HOME/.local" >> ~/.zshrc
-
 # Ansible installation
 RUN \
   sudo add-apt-repository --yes --update ppa:ansible/ansible; \
   sudo DEBIAN_FRONTEND=noninteractive TZ=Europe/Paris apt-get install -y ansible
 
-# # GO Installation
-# ARG GO_VERSION=1.24.5
-# RUN \
-#   curl -o go.tar.gz https://dl.google.com/go/go${GO_VERSION}.linux-amd64.tar.gz; \
-#   sudo tar -C /usr/local -xzf go.tar.gz; \
-#   rm go.tar.gz; \
-#   echo "export PATH=\$PATH:/usr/local/go/bin" >> ~/.zshrc; \
-#   echo "Go Installed"
+RUN zsh -c "source ~/.zshrc &&  \
+  asdf --version && \
+  asdf plugin add nodejs && \
+  asdf plugin add golang && \
+  asdf plugin add task && \
+  asdf plugin add github-cli"
 
-# # NVM Installation
-# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash;
-
-# Install gh cli
-RUN (type -p wget >/dev/null || (sudo apt update && sudo apt-get install wget -y)) \
-  && sudo mkdir -p -m 755 /etc/apt/keyrings \
-  && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
-  && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
-  && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
-  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-  && sudo apt update \
-  && sudo apt install gh -y
+RUN zsh -c "source ~/.zshrc && \
+  asdf install task latest && \
+  asdf set --home task latest && \
+  asdf install github-cli latest && \
+  asdf set --home github-cli latest && \
+  echo 'Task: ' \$(task --version) && \
+  echo 'GH CLI: ' \$(gh --version) && \
+  echo 'ASDF: ' \$(asdf --version) && \
+  echo 'Ansible: ' \$(ansible --version) && \
+  echo 'Docker: ' \$(docker --version)"
 
 COPY --chmod=755 --chown=${USER}:${USER} ./setup /setup
 RUN sudo chmod -R +x /setup
