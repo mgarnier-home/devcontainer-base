@@ -8,6 +8,8 @@ for var in $(compgen -e | grep '^DEVCONTAINER_'); do
   fi
 done
 
+
+
 # if there is a variable named SSH_PRIVATE_KEY, then create a file ~/.ssh/id_rsa with its content
 if [ -n "$SSH_PRIVATE_KEY" ]; then
   mkdir -p ~/.ssh
