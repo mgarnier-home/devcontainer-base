@@ -66,9 +66,8 @@ ARG USER=mgarnier
 RUN \
   useradd --groups sudo --no-create-home --shell /bin/bash ${USER}; \
   echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER}; \
-  chmod 0440 /etc/sudoers.d/${USER}; 
-# \
-# sudo usermod -aG docker ${USER}
+  chmod 0440 /etc/sudoers.d/${USER}; \
+  sudo usermod -aG docker ${USER}
 
 
 # Setup ssh authorized keys
